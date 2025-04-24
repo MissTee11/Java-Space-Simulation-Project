@@ -15,7 +15,7 @@ public class UzayAraci {
 	private List<Person> people;
 	
 	
-	public UzayAraci(String name, String fromPlanet, LocalDate departureDate, int distanceHours) {
+	public UzayAraci(String name, String fromPlanet, String toPlanet, LocalDate departureDate, int distanceHours) {
 		this.name = name;
 		this.fromPlanet=fromPlanet;
 		this.toPlanet = toPlanet;
@@ -32,6 +32,45 @@ public class UzayAraci {
 		if(status.equals("Bekliyor")) {
 			status= "Yolda";
 		}
+	}
+	public void advanceHour() {
+		if(status.equals("Yolda")) {
+			hoursLeft--;
+			if(hoursLeft<=0) {
+				status="Vardi";
+				hoursLeft=0;
+			}
+		}
+	}
+	public void checkDestruction() {
+		boolean allDead= people.stream().allMatch(Person::isDead);
+		if(allDead) {
+			status="IMHA";
+		}
+	}
+	public boolean isComplete() {
+		return status.equals("Vardi")|| status.equals("IMHA");
+	}
+	public String getStatus() {
+		return status;
+	}
+	public LocalDate getDepartureDate() {
+		return departureDate;
+	}
+	public int getHoursLeft() {
+		return status.equals("IMHA")? -1: hoursLeft;
+	}
+	public String getFromPlanet() {
+		return fromPlanet;
+	}
+	public String getName() {
+		return name;
+	}
+	public String getToPlanet(){
+		return toPlanet;
+	}
+	public List<Person> getPeople(){
+		return people;
 	}
 	
 }

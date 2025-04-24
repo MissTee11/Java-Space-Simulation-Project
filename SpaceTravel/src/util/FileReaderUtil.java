@@ -1,5 +1,51 @@
 package util;
 
-public class FileReaderUtil {
+import model.*;
 
+import java.io.*;
+import java.nio.file.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
+public class FileReaderUtil {
+	private static final DateTimeFormatter formatter=DateTimeFormatter.ofPattern("d.M.yyyy");
+	
+	public static List<Gezegen> readGezegenler(String path) throws IOException{
+		List<Gezegen> gezegenler = new ArrayList<>();
+		for(String line: Files.readAllLines(Paths.get(path))) {
+			String[] parts = line.split("#");
+			String name = parts[0];
+			int hours = Integer.parseInt(parts[1]);
+			LocalDate date =LocalDate.parse(parts[2], formatter);
+			gezegenler.add(new Gezegen(name, new Zaman(hours, date)));
+		}
+		return gezegenler;
+	}
+	public static List<UzayAraci> readUzayAracilar(String path) throws IOException{
+		List<UzayAraci> uzayAracilar = new ArrayList<>();
+		for(String line: Files.readAllLines(Paths.get(path))) {
+			String[] parts = line.split("#");
+			String name = parts[0];
+			String from= parts[1];
+			String to= parts[2];
+			LocalDate date =LocalDate.parse(parts[3], formatter);
+			int dist = Integer.parseInt(parts[4]);
+			uzayAracilar.add(new UzayAraci(name, from, to, date, dist));
+		}
+		return uzayAracilar;
+	}
+	 public static List<Person> readPersons(String path) throws IOException {
+	        List<Person> people = new ArrayList<>();
+	        for (String line : Files.readAllLines(Paths.get(path))) {
+	            String[] parts = line.split("#");
+	            String name = parts[0];
+	            int age = Integer.parseInt(parts[1]);
+	            int life = Integer.parseInt(parts[2]);
+	            String vehicle = parts[3];
+	            people.add(new Person(name, age, life, vehicle));
+	        }
+	        return people;
+	    }
+	
 }

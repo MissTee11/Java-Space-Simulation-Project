@@ -19,7 +19,7 @@ public class Zaman {
 			currentDate= currentDate.plusDays(1);
 		}
 	}
-	public LocalDate getCurrebtDate() {
+	public LocalDate getCurrentDate() {
 		return currentDate;
 	}
 	
