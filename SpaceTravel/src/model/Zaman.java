@@ -1,5 +1,6 @@
 package model;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Zaman {
 	private int hoursPerDay;
@@ -19,8 +20,8 @@ public class Zaman {
 			currentDate= currentDate.plusDays(1);
 		}
 	}
-	public LocalDate getCurrentDate() {
-		return currentDate;
+	public LocalDateTime getCurrentDateTime() {
+		return currentDate.atTime(currentHour, 0);
 	}
 	
 	public int getCurrentHour() {
@@ -28,6 +29,9 @@ public class Zaman {
 	}
 	public String getFormattedTime() {
 		return String.format("%02d:00", currentHour);
+	}
+	public int getHoursPerDay() {
+		return hoursPerDay;
 	}
 
 }

@@ -21,29 +21,24 @@ public class Simulation {
 			uzayAracilar.stream()
 						.filter(v ->v.getName().equals(p.getSpaceCraftName()))
 						.findFirst()
-						.ifPresent(v->v.boardPerson(p));
-			 gezegenler.stream()
-	            .filter(pl -> pl.getName().equals(
-	                uzayAracilar.stream()
-	                        .filter(v -> v.getName().equals(p.getName()))
-	                        .map(UzayAraci::getFromPlanet)
+						.ifPresent(v->{
+							v.boardPerson(p);
+							
+							gezegenler.stream()
+							.filter(pl -> pl.getName().equals(v.getFromPlanet()))
 	                        .findFirst()
-	                        .orElse("")))
-	            .findFirst()
-	            .ifPresent(pl -> pl.addPerson(p));
-		}
+	                        .ifPresent(pl -> pl.addPerson(p));
+		});
+	  }
 	}
+		
 	public void run() {
 		while(uzayAracilar.stream().anyMatch(v-> !v.isComplete())) {
-			//clearConsole();
+			clearConsole();
 			updateSimulation();
 			printStatus();
-			try {
-				Thread.sleep(1000);			
-				}
-			catch(InterruptedException e) {
-				e.printStackTrace();
-			}
+			System.out.flush();
+			sleep(100);
 		}
 		System.out.println("Simulation tamamlanmis");
 	}
@@ -59,14 +54,12 @@ public class Simulation {
 			
 			if(uzayaraci.getStatus().equals("Bekliyor")&&
 			departureGezegen != null&&
-			uzayaraci.getDepartureDate().toLocalDate().equals(departureGezegen.getZaman().getCurrentDate())) {
+			uzayaraci.getDepartureDate().toLocalDate().equals(departureGezegen.getZaman().getCurrentDateTime().toLocalDate())) {
 				uzayaraci.startJourney();
 			}
 			
-			if (departureGezegen != null) {
-	            uzayaraci.advanceHour(departureGezegen.getZaman()); 
-	        }
-			
+	        uzayaraci.advanceHour(departureGezegen.getZaman()); 
+	   
 			uzayaraci.checkDestruction();
 			
 			for(Person p: uzayaraci.getPeople()) {
@@ -78,7 +71,7 @@ public class Simulation {
 		
 		System.out.println("Gezegenler: ");
 		for(Gezegen g: gezegenler) {
-			System.out.printf("--- %s ---\nTarih: %s\nNüfus: %d\n\n", g.getName(), g.getZaman().getCurrentDate(), g.getPopulationSize());
+			System.out.printf("--- %s ---\nTarih: %s\nNüfus: %d\n\n", g.getName(), g.getZaman().getCurrentDateTime(), g.getPopulationSize());
 		}
 		
 		System.out.println("Uzay Araclari: ");
@@ -90,12 +83,27 @@ public class Simulation {
 			String arrivalDate = "--";
 			
 			if (v.getStatus().equals("Vardi")) {
-	            arrivalDate = v.getDepartureDate().plusHours(v.getHoursLeft()).toString();
+				Gezegen destinationPlanet = gezegenler.stream()
+	                    .filter(pl -> pl.getName().equals(v.getToPlanet()))
+	                    .findFirst()
+	                    .orElse(null);
+	            if (destinationPlanet != null) {
+	                arrivalDate = v.calculateArrivalDate(destinationPlanet.getZaman()).toString();
+	            }
 	        }
 			 System.out.printf("%-15s %-15s %-10s %-10s %-20s %s\n", v.getName(), v.getStatus(), v.getFromPlanet(), v.getToPlanet(), kalanSaat, arrivalDate);
 		}	
 	}
-	/*private void clearConsole() {
+	
+	private void sleep(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+	
+	private void clearConsole() {
 		try {
 	        if (System.getProperty("os.name").contains("Windows")) {
 	            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
@@ -106,7 +114,7 @@ public class Simulation {
 	    } catch (IOException | InterruptedException e) {
 	        e.printStackTrace();
 	    }
-	}*/
+	}
 	
 	public static void main(String[] args) throws IOException{
 		Simulation sim= new Simulation("data/Gezegenler.txt","data/UzayAracilar.txt", "data/Persons.txt");

@@ -32,7 +32,7 @@ public class UzayAraci {
 		}
 	}
 	public void advanceHour(Zaman zaman) {
-		 if (status.equals("Bekliyor") && departureDate.toLocalDate().equals(zaman.getCurrentDate())) {
+		 if (status.equals("Bekliyor") && departureDate.toLocalDate().equals(zaman.getCurrentDateTime().toLocalDate())) {
 		        startJourney(); 
 		    }
 		 
@@ -44,6 +44,7 @@ public class UzayAraci {
 			}
 		}
 	}
+	
 	public void checkDestruction() {
 		boolean allDead= people.stream().allMatch(Person::isDead);
 		if(allDead) {
@@ -53,6 +54,15 @@ public class UzayAraci {
 	public boolean isComplete() {
 		return status.equals("Vardi")|| status.equals("IMHA");
 	}
+	
+	public LocalDateTime calculateArrivalDate(Zaman destinationPlanetZaman) {
+	    Zaman tempZaman = new Zaman(destinationPlanetZaman.getHoursPerDay(), departureDate.toLocalDate());
+	    for (int i = 0; i < hoursLeft; i++) {
+	        tempZaman.advanceHour();
+	    }
+	    return tempZaman.getCurrentDateTime();
+	}
+
 	public String getStatus() {
 		return status;
 	}

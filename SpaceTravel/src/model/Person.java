@@ -2,11 +2,13 @@ package model;
 
 public class Person {
 	private String name;
+	private int age;
 	private int remainingLife;//kalan hayat
 	private String spacecraftName;//uzay araci adi
 	
-	public Person(String name,int remainingLife, String spacecraftName) {
+	public Person(String name,int age, int remainingLife, String spacecraftName) {
 		this.name = name;
+		this.age=age;
 		this.remainingLife = remainingLife;
 		this.spacecraftName = spacecraftName;
 	}
@@ -24,5 +26,8 @@ public class Person {
 	}
 	public String getName() {
 		return name;
+	}
+	public int getAge() {
+		return age;
 	}
 }

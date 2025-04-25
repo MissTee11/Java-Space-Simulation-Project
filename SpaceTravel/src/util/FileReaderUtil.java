@@ -47,7 +47,7 @@ public class FileReaderUtil {
 	            int age = Integer.parseInt(parts[1]);
 	            int life = Integer.parseInt(parts[2]);
 	            String vehicle = parts[3];
-	            people.add(new Person(name,life, vehicle));
+	            people.add(new Person(name, age ,life, vehicle));
 	        }
 	        return people;
 	    }
