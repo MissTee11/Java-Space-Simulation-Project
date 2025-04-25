@@ -5,11 +5,12 @@ import model.*;
 import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class FileReaderUtil {
-	private static final DateTimeFormatter formatter=DateTimeFormatter.ofPattern("d.M.yyyy");
+	private static final DateTimeFormatter formatter=DateTimeFormatter.ofPattern("d.MM.yyyy");
 	
 	public static List<Gezegen> readGezegenler(String path) throws IOException{
 		List<Gezegen> gezegenler = new ArrayList<>();
@@ -30,8 +31,11 @@ public class FileReaderUtil {
 			String from= parts[1];
 			String to= parts[2];
 			LocalDate date =LocalDate.parse(parts[3], formatter);
+			
+			LocalDateTime dateTime = date.atStartOfDay();
+			
 			int dist = Integer.parseInt(parts[4]);
-			uzayAracilar.add(new UzayAraci(name, from, to, date, dist));
+			uzayAracilar.add(new UzayAraci(name, from, to, dateTime, dist));
 		}
 		return uzayAracilar;
 	}
@@ -43,7 +47,7 @@ public class FileReaderUtil {
 	            int age = Integer.parseInt(parts[1]);
 	            int life = Integer.parseInt(parts[2]);
 	            String vehicle = parts[3];
-	            people.add(new Person(name, age, life, vehicle));
+	            people.add(new Person(name,life, vehicle));
 	        }
 	        return people;
 	    }

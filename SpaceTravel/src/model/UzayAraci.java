@@ -1,6 +1,6 @@
 package model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,20 +8,18 @@ public class UzayAraci {
 	private String name;
 	private String fromPlanet;//Gezegenden
 	private String toPlanet;//Gezegene
-	private LocalDate departureDate;
-	private int distanceHours;
+	private LocalDateTime departureDate;
 	private int hoursLeft;
 	private String status;
 	private List<Person> people;
 	
 	
-	public UzayAraci(String name, String fromPlanet, String toPlanet, LocalDate departureDate, int distanceHours) {
+	public UzayAraci(String name, String fromPlanet, String toPlanet, LocalDateTime departureDate, int hoursLeft) {
 		this.name = name;
 		this.fromPlanet=fromPlanet;
 		this.toPlanet = toPlanet;
 		this.departureDate = departureDate;
-		this.distanceHours = distanceHours;
-		this.hoursLeft = distanceHours;
+		this.hoursLeft = hoursLeft;
 		this.status = "Bekliyor";
 		this.people = new ArrayList<>();
 	}
@@ -33,8 +31,12 @@ public class UzayAraci {
 			status= "Yolda";
 		}
 	}
-	public void advanceHour() {
-		if(status.equals("Yolda")) {
+	public void advanceHour(Zaman zaman) {
+		 if (status.equals("Bekliyor") && departureDate.toLocalDate().equals(zaman.getCurrentDate())) {
+		        startJourney(); 
+		    }
+		 
+		if(status.equals("Yolda")&& hoursLeft>0) {
 			hoursLeft--;
 			if(hoursLeft<=0) {
 				status="Vardi";
@@ -54,7 +56,7 @@ public class UzayAraci {
 	public String getStatus() {
 		return status;
 	}
-	public LocalDate getDepartureDate() {
+	public LocalDateTime getDepartureDate() {
 		return departureDate;
 	}
 	public int getHoursLeft() {
