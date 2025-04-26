@@ -6,6 +6,7 @@ import util.FileReaderUtil;
 
 import java.util.*;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
 public class Simulation {
 	private List<Gezegen> gezegenler;
@@ -56,23 +57,64 @@ public class Simulation {
 			departureGezegen != null&&
 			uzayaraci.getDepartureDate().toLocalDate().equals(departureGezegen.getZaman().getCurrentDateTime().toLocalDate())) {
 				uzayaraci.startJourney();
+			
+			
+			for(Person p:uzayaraci.getPeople()) {
+				departureGezegen.removePerson(p);
+		    	}
 			}
 			
 	        uzayaraci.advanceHour(departureGezegen.getZaman()); 
-	   
-			uzayaraci.checkDestruction();
 			
+	        if (uzayaraci.getStatus().equals("Yolda")) {
 			for(Person p: uzayaraci.getPeople()) {
 				p.decreaseLife();
+			  }
+				uzayaraci.checkDestruction();
+	        }
+			
+			
+			if(uzayaraci.getStatus().equals("Vardi")) {
+				Gezegen destinationGezegen = gezegenler.stream()
+						.filter(p -> p.getName().equals(uzayaraci.getToPlanet()))
+		                .findFirst()
+		                .orElse(null);
+			
+			if(destinationGezegen !=null) {
+				List<Person> arrivedPeople = new ArrayList<>(uzayaraci.getPeople());
+				for(Person p: arrivedPeople) {
+					if(!p.isDead()) {
+						destinationGezegen.addPerson(p);
+					  }
+				    }
+				uzayaraci.getPeople().clear();
+			     }
+			   }
 			}
-		}
 	}
 	private void printStatus() {
 		
 		System.out.println("Gezegenler: ");
+		System.out.printf("%-15s", "");
+		
 		for(Gezegen g: gezegenler) {
-			System.out.printf("--- %s ---\nTarih: %s\nNüfus: %d\n\n", g.getName(), g.getZaman().getCurrentDateTime(), g.getPopulationSize());
+			System.out.printf("%-20s", "--- " + g.getName() + " ---");
 		}
+		 System.out.println();
+		 
+		System.out.printf("%-15s", "Tarih");
+		for (Gezegen g : gezegenler) {
+			 String date = g.getZaman().getCurrentDateTime().toLocalDate().format(DateTimeFormatter.ofPattern("d.MM.yyyy"));
+		     System.out.printf("%-20s", date);
+		}
+		 System.out.println();
+		 
+		System.out.printf("%-15s", "Nüfus");
+		for (Gezegen g : gezegenler) {
+		  System.out.printf("%-20d\t", g.getPopulationSize());
+		}
+		 System.out.println("\n");
+		 
 		
 		System.out.println("Uzay Araclari: ");
 		System.out.printf("%-15s %-15s %-10s %-10s %-20s %s\n", "Arac Adi", "Durum", "Cikis", "Varis", "Hedefe Kalan Saat", "Hedefe Varis Tarihi");
@@ -88,7 +130,7 @@ public class Simulation {
 	                    .findFirst()
 	                    .orElse(null);
 	            if (destinationPlanet != null) {
-	                arrivalDate = v.calculateArrivalDate(destinationPlanet.getZaman()).toString();
+	                arrivalDate = v.calculateArrivalDate(destinationPlanet.getZaman()).toLocalDate().toString();
 	            }
 	        }
 			 System.out.printf("%-15s %-15s %-10s %-10s %-20s %s\n", v.getName(), v.getStatus(), v.getFromPlanet(), v.getToPlanet(), kalanSaat, arrivalDate);
