@@ -9,10 +9,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+/*Dosyadan gezegenleri, uzay araçlarını ve kişileri okumayı sağlar.*/
+
 public class FileReaderUtil {
 	private static final DateTimeFormatter formatter=DateTimeFormatter.ofPattern("d.MM.yyyy");
 	
-	public static List<Gezegen> readGezegenler(String path) throws IOException{
+	public static List<Gezegen> readGezegenler(String path) throws IOException{//Bir dosyadan gezegenleri okur ve Gezegen nesnelerinin bir listesini oluşturur.
 		List<Gezegen> gezegenler = new ArrayList<>();
 		try (BufferedReader reader = Files.newBufferedReader(Paths.get(path))) {
             String line;
@@ -26,7 +28,7 @@ public class FileReaderUtil {
 	  }
 		return gezegenler;
 	}
-	public static List<UzayAraci> readUzayAracilar(String path) throws IOException{
+	public static List<UzayAraci> readUzayAracilar(String path) throws IOException{//Bir dosyadan uzay araçlarını okur ve UzayAraci nesnelerinin bir listesini oluşturur.
 		List<UzayAraci> uzayAracilar = new ArrayList<>();
 		try (BufferedReader reader = Files.newBufferedReader(Paths.get(path))) {
             String line;
@@ -45,7 +47,7 @@ public class FileReaderUtil {
 	}
 		return uzayAracilar;
 	}
-	 public static List<Person> readPersons(String path) throws IOException {
+	 public static List<Person> readPersons(String path) throws IOException {//Bir dosyadan kişileri okur ve Kişi nesnelerinin bir listesini oluşturur.
 	        List<Person> people = new ArrayList<>();
 	        try (BufferedReader reader = Files.newBufferedReader(Paths.get(path))) {
 	            String line;

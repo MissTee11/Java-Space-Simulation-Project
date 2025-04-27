@@ -8,6 +8,11 @@ import java.util.*;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
+/*
+ *Uzay araçlarının gezegenler arası yolculuğunu simüle eden ana sınıf.
+ *Zaman akışını, uzay aracının hareketini ve insanların hayatta kalmasını ele alır.
+*/
+
 public class Simulation {
 	private List<Gezegen> gezegenler;
 	private List<UzayAraci> uzayAracilar;
@@ -18,7 +23,7 @@ public class Simulation {
 		uzayAracilar= FileReaderUtil.readUzayAracilar(araciDosya);
 		people = FileReaderUtil.readPersons(personDosya);
 		
-		for(Person p :people) {
+		for(Person p :people) {//Kişileri uzay araçlarına ve köken gezegenlerine atayın
 			uzayAracilar.stream()
 						.filter(v ->v.getName().equals(p.getSpaceCraftName()))
 						.findFirst()
@@ -33,17 +38,17 @@ public class Simulation {
 	  }
 	}
 		
-	public void run() {
+	public void run() {//Tüm uzay araçları yolculuklarını tamamlayana kadar simülasyon döngüsünü başlatır ve çalıştırır.
 		while(uzayAracilar.stream().anyMatch(v-> !v.isComplete())) {
 			clearConsole();
 			updateSimulation();
 			printStatus();
 			System.out.flush();
-			sleep(100);
+			sleep(50);
 		}
 		System.out.println("Simulation tamamlanmis");
 	}
-	private void updateSimulation() {
+	private void updateSimulation() {//Tüm gezegenlerdeki zamanı ilerletir, uzay araçlarının durumlarını ve insanların yaşam durumlarını günceller.
 		for(Gezegen gezegen: gezegenler) {
 			gezegen.updateZaman();
 		}
@@ -53,27 +58,27 @@ public class Simulation {
 					.findFirst()
 					.orElse(null);
 			
-			if(uzayaraci.getStatus().equals("Bekliyor")&&
+			if(uzayaraci.getStatus().equals("Bekliyor")&&//Eğer cıkıs günü ise, yolculuğa başla
 			departureGezegen != null&&
 			uzayaraci.getDepartureDate().toLocalDate().equals(departureGezegen.getZaman().getCurrentDateTime().toLocalDate())) {
 				uzayaraci.startJourney();
 			
 			
-			for(Person p:uzayaraci.getPeople()) {
+			for(Person p:uzayaraci.getPeople()) {//İnsanları cıkış gezegeninden çıkarın
 				departureGezegen.removePerson(p);
 		    	}
 			}
 			
 	        uzayaraci.advanceHour(departureGezegen.getZaman()); 
 			
-	        if (uzayaraci.getStatus().equals("Yolda")) {
+	        if (uzayaraci.getStatus().equals("Yolda")) {//Yolculuk sırasında insanların kalan yaşam süreleri kısalır
 			for(Person p: uzayaraci.getPeople()) {
 				p.decreaseLife();
 			  }
 				uzayaraci.checkDestruction();
 	        }
 			
-			
+	      //Yolculuk tamamlandığında, hayatta kalan kişileri hedef gezegene ekleyin
 			if(uzayaraci.getStatus().equals("Vardi")) {
 				Gezegen destinationGezegen = gezegenler.stream()
 						.filter(p -> p.getName().equals(uzayaraci.getToPlanet()))
@@ -92,7 +97,7 @@ public class Simulation {
 			   }
 			}
 	}
-	private void printStatus() {
+	private void printStatus() {//Gezegenlerin ve uzay araçlarının güncel durumunu konsola yazdırır.
 		
 		System.out.println("Gezegenler: ");
 		System.out.printf("%-15s", "");
@@ -137,7 +142,7 @@ public class Simulation {
 		}	
 	}
 	
-	private void sleep(int ms) {
+	private void sleep(int ms) {//Simülasyonu belirli bir milisaniye kadar duraklatır.
         try {
             Thread.sleep(ms);
         } catch (InterruptedException e) {
@@ -145,7 +150,7 @@ public class Simulation {
         }
     }
 	
-	private void clearConsole() {
+	private void clearConsole() {//Temiz bir simülasyon çıktısı için konsol ekranını temizler.
 		try {
 	        if (System.getProperty("os.name").contains("Windows")) {
 	            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
@@ -158,7 +163,7 @@ public class Simulation {
 	    }
 	}
 	
-	public static void main(String[] args) throws IOException{
+	public static void main(String[] args) throws IOException{//Simülasyonu başlatmanın ana yöntemi.
 		Simulation sim= new Simulation("data/Gezegenler.txt","data/UzayAracilar.txt", "data/Persons.txt");
 		sim.run();
 	}
